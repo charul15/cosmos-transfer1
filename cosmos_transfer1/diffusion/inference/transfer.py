@@ -244,6 +244,15 @@ def demo(cfg, control_inputs):
         current_video_path = input_dict.get("visual_input", None)
 
         video_save_subfolder = os.path.join(cfg.video_save_folder, f"video_{i}")
+        if cfg.batch_input_path:
+            video_save_path = os.path.join(video_save_subfolder, "output.mp4")
+            prompt_save_path = os.path.join(video_save_subfolder, "prompt.txt")
+        else:
+            video_save_path = os.path.join(cfg.video_save_folder, f"{cfg.video_save_name}.mp4")
+            prompt_save_path = os.path.join(cfg.video_save_folder, f"{cfg.video_save_name}.txt")
+
+        if os.path.exists(video_save_path):
+            continue
         os.makedirs(video_save_subfolder, exist_ok=True)
         current_control_inputs = copy.deepcopy(control_inputs)
 
@@ -269,13 +278,6 @@ def demo(cfg, control_inputs):
             log.critical("Guardrail blocked generation.")
             continue
         video, prompt = generated_output
-
-        if cfg.batch_input_path:
-            video_save_path = os.path.join(video_save_subfolder, "output.mp4")
-            prompt_save_path = os.path.join(video_save_subfolder, "prompt.txt")
-        else:
-            video_save_path = os.path.join(cfg.video_save_folder, f"{cfg.video_save_name}.mp4")
-            prompt_save_path = os.path.join(cfg.video_save_folder, f"{cfg.video_save_name}.txt")
 
         if device_rank == 0:
             # Save video
