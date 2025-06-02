@@ -253,6 +253,8 @@ def demo(cfg, control_inputs):
             batch_prompts = filtered_batch_prompts
 
         actual_batch_size = len(batch_prompts)
+        if actual_batch_size==0:
+            continue
         # Extract batch data
         batch_prompt_texts = [p.get("prompt", None) for p in batch_prompts]
         batch_video_paths = [p.get("visual_input", None) for p in batch_prompts]
