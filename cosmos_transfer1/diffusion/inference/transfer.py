@@ -238,11 +238,20 @@ def demo(cfg, control_inputs):
         # Single prompt case
         prompts = [{"prompt": cfg.prompt, "visual_input": cfg.input_video_path}]
 
+
     batch_size = cfg.batch_size if hasattr(cfg, "batch_size") else 1
     os.makedirs(cfg.video_save_folder, exist_ok=True)
     for batch_start in range(0, len(prompts), batch_size):
         # Get current batch
         batch_prompts = prompts[batch_start : batch_start + batch_size]
+        filtered_batch_prompts = []
+        if cfg.batch_input_path:
+            for i, input_dict in enumerate(batch_prompts):
+                video_save_path = os.path.join(cfg.video_save_folder, f"video_{batch_start+i}", "output.mp4")
+                if not os.path.exists(video_save_path):
+                    filtered_batch_prompts.append(input_dict)
+            batch_prompts = filtered_batch_prompts
+
         actual_batch_size = len(batch_prompts)
         # Extract batch data
         batch_prompt_texts = [p.get("prompt", None) for p in batch_prompts]
@@ -316,6 +325,7 @@ def demo(cfg, control_inputs):
             else:
                 video_save_path = os.path.join(cfg.video_save_folder, f"{cfg.video_save_name}.mp4")
                 prompt_save_path = os.path.join(cfg.video_save_folder, f"{cfg.video_save_name}.txt")
+
             # Save video and prompt
             if device_rank == 0:
                 os.makedirs(os.path.dirname(video_save_path), exist_ok=True)

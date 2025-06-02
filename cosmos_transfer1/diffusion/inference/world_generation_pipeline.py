@@ -1189,7 +1189,8 @@ class DiffusionControl2WorldMultiviewGenerationPipeline(DiffusionControl2WorldGe
         video = self._run_guardrail_on_video_with_offload(video)
         if video is None:
             log.critical("Generated video is not safe")
-            raise ValueError("Guardrail check failed: Generated video is unsafe")
+            return None
+            # raise ValueError("Guardrail check failed: Generated video is unsafe")
 
         log.info("Pass guardrail on generated video")
 
